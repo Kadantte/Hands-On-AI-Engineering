@@ -5,6 +5,7 @@ REM AI Research Agent — daily data collection (Task Scheduler entry point)
 REM Runs at 7:45am Lagos time; OpenClaw reads digest_input_today.json at 8am.
 
 set "PROJECT_ROOT=%~dp0.."
+set "DEVABLE_PROJECT_ROOT=%PROJECT_ROOT%"
 cd /d "%PROJECT_ROOT%" || (
     echo ERROR: Could not change to project directory: %PROJECT_ROOT%
     exit /b 1

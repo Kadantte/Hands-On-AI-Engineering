@@ -104,11 +104,26 @@ def collect_ainews(config: Dict[str, Any], from_date: str, to_date: str, depth: 
     return ainews_collector.collect(from_date, to_date, depth)
 
 
+def collect_x(config: Dict[str, Any], from_date: str, to_date: str, depth: str) -> CollectionResult:
+    """Collect tweets via twitter-cli (search + KOL timelines)."""
+    from lib import twitter_collector
+
+    return twitter_collector.collect(
+        entities.GITHUB_SOURCES,
+        from_date,
+        to_date,
+        depth,
+        auth_token=env.get_key(config, "TWITTER_AUTH_TOKEN"),
+        ct0=env.get_key(config, "TWITTER_CT0"),
+    )
+
+
 # All collectors with their names
 COLLECTORS = {
     "tavily": collect_tavily,
     "goodailist": collect_goodailist,
     "ainews": collect_ainews,
+    "x": collect_x,
     "hackernews": collect_hackernews,
     "github": collect_github,
     "huggingface": collect_huggingface,

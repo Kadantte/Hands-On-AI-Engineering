@@ -11,8 +11,8 @@ if not exist data_today.json (
     exit /b 1
 )
 
-py -3 scripts\filter_top_items.py data_today.json digest_input_today.json --top 20
+py -3 scripts\filter_top_items.py data_today.json digest_input_today.json --top 30
 if errorlevel 1 (
-    python scripts\filter_top_items.py data_today.json digest_input_today.json --top 20
+    python scripts\filter_top_items.py data_today.json digest_input_today.json --top 30
 )
 exit /b %ERRORLEVEL%

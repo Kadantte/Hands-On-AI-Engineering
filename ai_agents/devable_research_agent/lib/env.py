@@ -39,7 +39,9 @@ def get_config() -> Dict[str, Any]:
     config.update(project_claude_env)
     config.update(project_env)
     config.update(local_env)
-    config.update({k: v for k, v in os.environ.items() if k.startswith(("MORNING_AI_", "GITHUB_", "TAVILY_", "OPENAI_", "MISTRAL_", "ANTHROPIC_"))})
+    config.update({k: v for k, v in os.environ.items() if k.startswith((
+        "MORNING_AI_", "GITHUB_", "TAVILY_", "OPENAI_", "MISTRAL_", "ANTHROPIC_", "TWITTER_",
+    ))})
 
     return config
 
@@ -60,4 +62,5 @@ def get_available_sources(config: Dict[str, Any]) -> Dict[str, bool]:
         "tavily": bool(get_key(config, "TAVILY_API_KEY")),
         "goodailist": True,
         "ainews": True,
+        "x": bool(get_key(config, "TWITTER_AUTH_TOKEN") and get_key(config, "TWITTER_CT0")),
     }
