@@ -1,0 +1,9 @@
+crewai
+crewai-tools
+langchain-openai
+langchain-community
+ddgs
+firecrawl-py
+litellm
+streamlit
+python-dotenv
