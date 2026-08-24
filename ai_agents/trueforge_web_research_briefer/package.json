@@ -1,0 +1,18 @@
+{
+  "name": "trueforge-web-research-briefer",
+  "version": "1.0.0",
+  "description": "A web research briefer built on the TrueForge agent harness, driven from TypeScript.",
+  "type": "module",
+  "scripts": {
+    "start": "tsx driver.ts"
+  },
+  "dependencies": {
+    "@truefoundry/trueforge-sdk": "^0.1.0",
+    "dotenv": "^16.4.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0"
+  }
+}
