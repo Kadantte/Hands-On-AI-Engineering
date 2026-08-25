@@ -1,0 +1,19 @@
+[project]
+name = "self-evolving-code-review-agent"
+version = "1.0.0"
+description = "An ExpeL-inspired code review agent that learns team conventions from human feedback."
+readme = "README.md"
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "actian-vectorai-client>=1.0.2",
+    "langgraph>=1.1.0",
+    "ollama>=0.6.2",
+    "pandas>=2.2.0",
+    "python-dotenv>=1.0.0",
+    "sentence-transformers>=3.0.0",
+    "streamlit>=1.57.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["self_evolving_agent*"]
+

@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Self-Evolving Code Review Agent</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --panel: rgba(15, 23, 42, 0.72);
+      --border: rgba(129, 140, 248, 0.3);
+      --muted: #a5b4fc;
+      --text: #f8fafc;
+      --green: #34d399;
+      --red: #fb7185;
+      --amber: #fbbf24;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%);
+    }
+    .shell { width: min(1180px, 94vw); margin: 0 auto; padding: 38px 0 24px; }
+    .hero { text-align: center; margin-bottom: 28px; }
+    h1 { margin: 0; font-size: clamp(32px, 5vw, 54px); }
+    .grid { display: grid; grid-template-columns: 1.35fr 0.65fr; gap: 20px; }
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 22px;
+      background: var(--panel);
+      box-shadow: 0 20px 60px rgba(2, 6, 23, 0.34);
+      backdrop-filter: blur(16px);
+    }
+    h2 { margin: 0 0 16px; font-size: 20px; }
+    .code {
+      margin: 0 0 18px;
+      padding: 17px;
+      border-radius: 14px;
+      overflow-x: auto;
+      color: #cbd5e1;
+      background: #020617;
+      font: 13px/1.6 "Cascadia Code", Consolas, monospace;
+      white-space: pre;
+    }
+    .comment {
+      padding: 16px;
+      margin-top: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 14px;
+      background: rgba(30, 41, 59, 0.68);
+    }
+    .meta { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .severity { color: #fecdd3; font-size: 12px; font-weight: 700; }
+    .location { color: #94a3b8; font-size: 12px; }
+    .comment p { margin: 7px 0 12px; color: #e2e8f0; line-height: 1.55; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    button {
+      border: 1px solid rgba(148, 163, 184, 0.32);
+      border-radius: 9px;
+      padding: 8px 12px;
+      color: #e2e8f0;
+      background: rgba(15, 23, 42, 0.8);
+      cursor: pointer;
+      font-weight: 650;
+    }
+    button:hover, button.active { border-color: #818cf8; background: rgba(79, 70, 229, 0.34); }
+    .edit-box { display: none; width: 100%; margin-top: 10px; }
+    .edit-box.visible { display: block; }
+    textarea {
+      width: 100%; min-height: 76px; resize: vertical; border: 1px solid #475569;
+      border-radius: 10px; padding: 10px; color: #f8fafc; background: #0f172a;
+    }
+    .learn {
+      width: 100%; margin-top: 18px; padding: 12px; border-color: #6366f1;
+      background: linear-gradient(90deg, #4f46e5, #7c3aed);
+    }
+    .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .metric { padding: 15px; border-radius: 14px; background: rgba(30, 41, 59, 0.7); }
+    .metric strong { display: block; font-size: 25px; margin-top: 6px; }
+    .metric span { color: #a5b4fc; font-size: 12px; }
+    .rule { margin-top: 11px; padding: 13px; border-left: 3px solid #818cf8; background: rgba(49, 46, 129, 0.25); }
+    .rule small { display: block; color: #a5b4fc; margin-top: 5px; }
+    .toast { display: none; margin-top: 14px; color: #a7f3d0; text-align: center; }
+    footer { margin-top: 26px; text-align: center; color: #94a3b8; font-size: 13px; }
+    @media (max-width: 850px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="hero"><h1>Self-Evolving Code Review Agent</h1></div>
+    <div class="grid">
+      <section class="panel">
+        <h2>Review comments</h2>
+        <pre class="code">+ def delete_order(order_id, user_id):
++    return db.execute("DELETE FROM orders WHERE id = ?", (order_id,))</pre>
+        <article class="comment" data-comment="1">
+          <div class="meta"><span class="severity">HIGH</span><span class="location">delete_order</span></div>
+          <p>This delete path does not verify that the order belongs to the requesting user. Add an ownership condition before deleting.</p>
+          <div class="actions">
+            <button onclick="choose(this, 'accept')">Accept</button>
+            <button onclick="choose(this, 'reject')">Reject</button>
+            <button onclick="choose(this, 'edit')">Edit</button>
+          </div>
+          <div class="edit-box"><textarea>Require both order_id and user_id in the DELETE predicate so one user cannot delete another user's order.</textarea></div>
+        </article>
+        <article class="comment" data-comment="2">
+          <div class="meta"><span class="severity">LOW</span><span class="location">get_order</span></div>
+          <p>Consider renaming order to result for consistency with generic database helpers.</p>
+          <div class="actions">
+            <button onclick="choose(this, 'accept')">Accept</button>
+            <button onclick="choose(this, 'reject')">Reject</button>
+            <button onclick="choose(this, 'edit')">Edit</button>
+          </div>
+          <div class="edit-box"><textarea>Edited team-specific comment</textarea></div>
+        </article>
+        <button class="learn" onclick="learn()">Save feedback and teach agent</button>
+        <div class="toast" id="toast">Learning stored. The next review will retrieve these rules.</div>
+      </section>
+      <aside class="panel">
+        <h2>Learning memory</h2>
+        <div class="metrics">
+          <div class="metric"><span>Insights</span><strong id="insights">7</strong></div>
+          <div class="metric"><span>Reviews</span><strong id="reviews">4</strong></div>
+          <div class="metric"><span>Rejected</span><strong id="rejected">25%</strong></div>
+          <div class="metric"><span>Edited</span><strong id="edited">8%</strong></div>
+        </div>
+        <h2 style="margin-top:22px">Latest rules</h2>
+        <div id="rules">
+          <div class="rule">Always scope destructive order queries to the authenticated user.<small>Reinforced by accepted security feedback</small></div>
+          <div class="rule">Do not flag local variable naming when behavior is clear.<small>Learned from rejected style feedback</small></div>
+        </div>
+      </aside>
+    </div>
+    <footer>Built with Actian VectorAI DB · LangGraph · Qwen3 4B Instruct</footer>
+  </main>
+  <script>
+    function choose(button, action) {
+      const card = button.closest('.comment');
+      card.dataset.action = action;
+      card.querySelectorAll('button').forEach(item => item.classList.remove('active'));
+      button.classList.add('active');
+      card.querySelector('.edit-box').classList.toggle('visible', action === 'edit');
+    }
+    function learn() {
+      const cards = [...document.querySelectorAll('.comment')];
+      if (cards.some(card => !card.dataset.action)) {
+        document.getElementById('toast').textContent = 'Choose Accept, Reject, or Edit for every comment.';
+        document.getElementById('toast').style.display = 'block';
+        return;
+      }
+      const rejected = cards.filter(card => card.dataset.action === 'reject').length;
+      const edited = cards.filter(card => card.dataset.action === 'edit').length;
+      document.getElementById('insights').textContent = String(7 + cards.length);
+      document.getElementById('reviews').textContent = '5';
+      document.getElementById('rejected').textContent = Math.round(rejected / cards.length * 100) + '%';
+      document.getElementById('edited').textContent = Math.round(edited / cards.length * 100) + '%';
+      document.getElementById('toast').textContent = 'Learning stored. The next review will retrieve these rules.';
+      document.getElementById('toast').style.display = 'block';
+      document.querySelector('.learn').textContent = 'Feedback stored';
+      document.querySelector('.learn').disabled = true;
+    }
+  </script>
+</body>
+</html>
